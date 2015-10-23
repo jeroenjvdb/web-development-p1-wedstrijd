@@ -17,7 +17,7 @@ class MainController extends Controller
 
     public function competition()
     {
-    	Auth::login(User::find(1));
+    	// Auth::login(User::find(1));
     	$users = User::all();
     	$competitors = Competitor::all();
     	$data = ['competitors' => $competitors];
@@ -38,15 +38,15 @@ class MainController extends Controller
     	if( $request->file('duvel')->isValid() )
     	{
     		echo 'valid image';
-    		$destinationPath = "/img/competition/";
+    		$destinationPath = "img/competition/";
     		$extension = $request->file('duvel')->getClientOriginalExtension();
     		$fileName = rand(11111,99999).'.'.$extension; // renameing image
     		$fullPath = $destinationPath . $fileName;	
 
-            $request->file('duvel')->move( $destinationPath , $fileName); // uploading file to given path
+            $request->file('duvel')->move($destinationPath , $fileName); // uploading file to given path
             $competitor = new Competitor;
 
-            $competitor->picture_url = $fullPath;
+            $competitor->picture_url = '/' . $fullPath;
             $competitor->user_id = Auth::user()->id;
 
             $competitor->save();
@@ -78,11 +78,20 @@ class MainController extends Controller
 
     		$vote->save();
 
-    		return redirect()->route('competition');
+    		return redirect()->route('otherCompetitors');
     	}
 
     	return redirect()->back()->withErrors(['you have already voted for this competitor.']);
 
 
+    }
+
+    public function otherCompetitors()
+    {
+        $competitors = Competitor::all();
+
+        $data = ['competitors' => $competitors];
+
+        return View('competition.otherCompetitors')->with($data);
     }
 }

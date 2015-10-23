@@ -14,7 +14,7 @@ class CompetitorTableSeeder extends Seeder
     {
         $competitor = new Competitor;
 
-        $competitor->picture_url = "img/competition/test-duvel.jpg";
+        $competitor->picture_url = "/img/competition/test-duvel.jpg";
         $competitor->ip = "192.168.56.100";
 
         $competitor->user_id = 1;

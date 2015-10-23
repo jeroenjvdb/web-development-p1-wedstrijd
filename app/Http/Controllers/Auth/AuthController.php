@@ -2,9 +2,14 @@
 
 namespace App\Http\Controllers\Auth;
 
+use Auth;
+
 use App\User;
 use Validator;
 use App\Http\Controllers\Controller;
+
+use Illuminate\Http\Request;
+
 use Illuminate\Foundation\Auth\ThrottlesLogins;
 use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
 
@@ -30,7 +35,7 @@ class AuthController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('guest', ['except' => 'getLogout']);
+        $this->middleware('guest', ['except' => 'logout']);
     }
 
     /**
@@ -42,9 +47,11 @@ class AuthController extends Controller
     protected function validator(array $data)
     {
         return Validator::make($data, [
-            'name' => 'required|max:255',
-            'email' => 'required|email|max:255|unique:users',
-            'password' => 'required|confirmed|min:6',
+            'name'      => 'required|max:255',
+            'email'     => 'required|email|max:255|unique:users',
+            'password'  => 'required|confirmed|min:4',
+            'address'   => 'required|max:255',
+            'residence' => 'required'
         ]);
     }
 
@@ -57,21 +64,63 @@ class AuthController extends Controller
     protected function create(array $data)
     {
         return User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => bcrypt($data['password']),
+            'name'      => $data['name'],
+            'surname'   => $data['surname'],
+            'email'     => $data['email'],
+            'ip'        => $data['ip'],
+            'address'   => $data['address'],
+            'residence' => $data['residence'],
+            'password'  => bcrypt($data['password']),
         ]);
     }
 
-    public function login()
+    public function login(Request $request)
     {
-        $password   = $_POST['password'];
-        $email      = $_POST['email'];
+        $password   = $request->input('password');
+        $email      = $request->input('email');
 
 
         if(Auth::attempt(['password' => $password, 'email' => $email]))
         {
             return redirect()->route('competition');
+        } else
+        {
+            return back()->withErrors('there was something wronk with the password or email adress');
+        }
+    }
+
+    public function logout()
+    {
+        Auth::logout();
+        // echo 'whut';
+        return redirect()->back();
+    }
+
+    public function postRegister(Request $request)
+    {
+        $data = array(
+                    'name'                  => $request->input('name'),
+                    'surname'               => $request->input('surname'),
+                    'email'                 => $request->input('email'),
+                    'password'              => $request->input('password'),
+                    'password_confirmation' => $request->input('password_confirmation'),
+                    'ip'                    => $request->getClientIp(),
+                    'address'               => $request->input('address'),
+                    'residence'             => $request->input('residence')
+            );
+
+        $validator = $this->validator($data);
+
+        if($validator->fails())
+        {
+            return redirect()->back()->withErrors($validator->errors()->all())->withInput();
+        } 
+        else
+        {
+            $user = $this->create($data);
+            Auth::login($user);
+
+            return redirect()->back();
         }
     }
 }

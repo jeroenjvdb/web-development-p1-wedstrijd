@@ -14,8 +14,10 @@ class UserTableSeeder extends Seeder
     {
         $user = new User;
 
+        $user->ip = "192.168.56.100";
         $user->email = "jeroen_vdb1@hotmail.com";
-        $user->name = "Jeroen Van den Broeck";
+        $user->name = "Van den Broeck";
+        $user->surname = "Jeroen";
         $user->password = Hash::make('test');
 
        	$user->save();
