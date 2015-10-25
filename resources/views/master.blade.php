@@ -4,7 +4,9 @@
 	<meta charset="UTF-8">
 	<title>competition</title>
 	<link rel="stylesheet" href="/css/style.css">
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+	<link rel="stylesheet" href="/css/bootstrap.min.css">
+	<script src="/js/jquery-1.9.1.min.js"></script>
+	@yield('scripts')
 </head>
 <body>
 	{!! Form::open() !!}

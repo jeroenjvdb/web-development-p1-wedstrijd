@@ -43,15 +43,36 @@ class MainController extends Controller
     		$fileName = rand(11111,99999).'.'.$extension; // renameing image
     		$fullPath = $destinationPath . $fileName;	
 
-            $request->file('duvel')->move($destinationPath , $fileName); // uploading file to given path
+            $pic = $request->file('duvel');
+
+
+            $picSize = getimagesize($pic);
+            $width = $picSize[0];
+            $height = $picSize[1];
+            $newHeight = 100;
+            $newWidth = $newHeight * ($width/$height);
+            $image = imagecreatefromjpeg($pic);
+            $thumbnail = imagecreatetruecolor($newWidth, $newHeight);
+            // var_dump($picSize);
+            $heightFraction = $picSize[1]/$picSize[0];
+            // echo $heightFraction;
+            $newImage = imagecopyresampled($thumbnail, $image, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+            var_dump($thumbnail);
+            $thumbnailPath = $destinationPath . '/thumbnail/' . $fileName;
+            imagejpeg($thumbnail, $thumbnailPath);
+
+            $pic->move($destinationPath , $fileName); // uploading file to given path
             $competitor = new Competitor;
 
             $competitor->picture_url = '/' . $fullPath;
+            $competitor->thumbnail = '/' . $thumbnailPath;
             $competitor->user_id = Auth::user()->id;
 
             $competitor->save();
 
             return redirect()->route('competition')->withSuccess("you've succesfully uploaded your picture. cheers!");
+
+
     	}
     }
 
@@ -94,4 +115,54 @@ class MainController extends Controller
 
         return View('competition.otherCompetitors')->with($data);
     }
+
+    public function test()
+    {
+        $users = User::all();
+        $data = ['users' => $users];
+        return View('test')->with($data);
+    }
+
+    public function postTest(Request $request)
+    {
+        $pic = Input::file('duvel');
+        $picSize = getimagesize($pic);
+        $width = $picSize[0];
+        $height = $picSize[1];
+        $newHeight = 100;
+        $newWidth = $newHeight * ($width/$height);
+        $image = imagecreatefromjpeg($pic);
+        $thumbnail = imagecreatetruecolor($newWidth, $newHeight);
+        // var_dump($picSize);
+        $heightFraction = $picSize[1]/$picSize[0];
+        // echo $heightFraction;
+        $newImage = imagecopyresampled($thumbnail, $image, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+        var_dump($thumbnail);
+
+        imagejpeg($thumbnail, 'img/thumbnail/test.jpg');
+        // imagecopyresampled(dst_image, src_image, dst_x, dst_y, src_x, src_y, dst_w, dst_h, src_w, src_h)
+    }
+
+    public function testajax()
+    {
+        $user = Competitor::all();
+        $vote = new Vote;
+
+        $vote->ip = "lolz nope";
+        $vote->competitor_id = $user->first()->id;
+
+        $vote->save();
+
+        return json_encode($user);
+    }
+
+    public function managment()
+    {
+        $competitors = Competitor::all();
+
+        $data = ['competitors' => $competitors];
+
+        return View('managment')->with($data);
+    }
 }
+

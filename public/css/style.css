@@ -19,6 +19,10 @@ img{
   /*padding-bottom: 10px;*/
 }
 
+.loginbox.loginboxinner img{
+	max-height: 212px;
+}
+
 /* line 173, ../scss/main.scss */
 .loginbox.loginboxinner legend {
   font-size: 26px;
@@ -130,4 +134,23 @@ img{
 
 .item{
 	text-align: center;
+}
+
+.managment{
+	display: table;
+	height: 100px;
+	/*width: 100%*/
+}
+
+.managment div{
+	display: table-cell;
+	/*height: 100px,;*/
+	vertical-align: middle;
+}
+
+.test{
+	/*display: inline;*/
+	position: relative;
+	top: -150px;
+	left: 50%
 }

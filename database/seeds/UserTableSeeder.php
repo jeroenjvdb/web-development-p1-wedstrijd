@@ -19,6 +19,7 @@ class UserTableSeeder extends Seeder
         $user->name = "Van den Broeck";
         $user->surname = "Jeroen";
         $user->password = Hash::make('test');
+        $user->isAdmin = true;
 
        	$user->save();
     }

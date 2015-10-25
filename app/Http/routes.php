@@ -15,6 +15,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+route::get('/test',['as' => 'test', 'uses'=>'mainController@test']);
+route::post('/test', ['uses' => 'mainController@postTest']);
+route::get('/test/ajax', ['uses' => 'mainController@testajax']);
+
 Route::post('/login', ['as' => 'login', 'uses' => 'Auth\AuthController@login']);
 Route::get('/logout', ['as' => 'logout', 'uses' => 'Auth\AuthController@logout']);
 Route::post('/register', ['as' => 'register', 'uses' => 'Auth\AuthController@postRegister']);
@@ -24,3 +28,4 @@ Route::post('/competition', ['uses' => 'MainController@postCompetition']);
 Route::get('/competition/others', ['as' => 'otherCompetitors', 'uses' => 'mainController@otherCompetitors']);
 Route::get('/competitor/{id}', ['as' => 'competitor', 'uses' => 'MainController@competitor']);
 Route::get('/competitor/{id}/vote', ['as' => 'vote', 'uses' => 'MainController@vote']);
+Route::get('/managment', [ 'as' => 'managment', 'uses' => 'mainController@managment']);

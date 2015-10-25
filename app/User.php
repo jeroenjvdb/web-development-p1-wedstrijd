@@ -36,4 +36,14 @@ class User extends Model implements AuthenticatableContract,
      * @var array
      */
     protected $hidden = ['password', 'remember_token'];
+
+    public function NAW()
+    {
+        return $this->surname . ' ' . $this->name . '<br> ' . $this->address . ' <br>' . $this->residence;
+    }
+
+    public function fullName()
+    {
+        return $this->surname . ' ' . $this->name;
+    }
 }

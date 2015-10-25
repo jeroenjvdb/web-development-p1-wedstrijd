@@ -15,9 +15,11 @@ class CreateCompetitorTable extends Migration
         Schema::create('competitors', function($table) {
             $table->increments('id');
             $table->string('picture_url');
+            $table->string('thumbnail');
             $table->string('ip');
             $table->integer('user_id')->unsigned();
             $table->foreign('user_id')->references('id')->on('users');
+            $table->boolean('is_deleted');
 
             $table->timestamps();
         });
