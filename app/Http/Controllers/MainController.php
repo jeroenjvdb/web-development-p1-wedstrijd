@@ -5,63 +5,82 @@ namespace App\Http\Controllers;
 use App\User;
 use App\Competitor;
 use App\Vote;
+use App\Winner;
 use Input;
 use Auth;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use Response;
 
 class MainController extends Controller
 {
-    //
+    public function home()
+    {
+        $winners = Winner::all();
+
+        // var_dump(empty($winners));
+        if($winners->first())
+        {
+            echo 'test';
+        } else
+        {
+            echo 'leeg';
+        }
+        foreach($winners as $winner)
+        {
+            // var_dump($winner);
+        }
+
+        // var_dump($winners);
+
+        $data = array('winners' => $winners);
+
+
+        return View('welcome')->with($data);
+    }
 
     public function competition()
     {
-    	// Auth::login(User::find(1));
     	$users = User::all();
     	$competitors = Competitor::all();
     	$data = ['competitors' => $competitors];
-    	foreach ($competitors as $key => $competitor) {
-    		# code...
-    	// var_dump($competitor->getTotalVotes());
-    	}
-
+    	
     	return View('competition.competition')->with($data);
 
     }
 
     public function postCompetition(Request $request)
     {
-    	var_dump($request->getClientIp() . '<br>');
-    	var_dump(Input::file('duvel'));
-    	// var_dump($request->file('duvel'));
+    	//check if image is valid
     	if( $request->file('duvel')->isValid() )
     	{
-    		echo 'valid image';
+
     		$destinationPath = "img/competition/";
     		$extension = $request->file('duvel')->getClientOriginalExtension();
     		$fileName = rand(11111,99999).'.'.$extension; // renameing image
+            //fullpath = path to picture + filename + extension
     		$fullPath = $destinationPath . $fileName;	
 
             $pic = $request->file('duvel');
 
-
+            //make a thumbnail for the same pic
             $picSize = getimagesize($pic);
             $width = $picSize[0];
             $height = $picSize[1];
             $newHeight = 100;
+            //change the width depending on the height of the pic
             $newWidth = $newHeight * ($width/$height);
             $image = imagecreatefromjpeg($pic);
             $thumbnail = imagecreatetruecolor($newWidth, $newHeight);
-            // var_dump($picSize);
-            $heightFraction = $picSize[1]/$picSize[0];
-            // echo $heightFraction;
+            //make the pic ($image) smaller and move it to $thumbnail
             $newImage = imagecopyresampled($thumbnail, $image, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
             var_dump($thumbnail);
-            $thumbnailPath = $destinationPath . '/thumbnail/' . $fileName;
+            //the path where to put the thumbnail
+            $thumbnailPath = $destinationPath . 'thumbnail/' . $fileName;
             imagejpeg($thumbnail, $thumbnailPath);
-
-            $pic->move($destinationPath , $fileName); // uploading file to given path
+            // uploading file to given path
+            $pic->move($destinationPath , $fileName); 
             $competitor = new Competitor;
 
             $competitor->picture_url = '/' . $fullPath;
@@ -88,7 +107,7 @@ class MainController extends Controller
     public function vote($id, Request $request)
     {
     	$competitor = Competitor::findOrFail($id);
-
+        //check if there is no vote for this particular competitor on current ip adress
     	if(!Vote::where('ip', '=', $request->getClientIp())->where('competitor_id', '=', $id)->exists())
     	{
     		echo 'nice';
@@ -103,13 +122,33 @@ class MainController extends Controller
     	}
 
     	return redirect()->back()->withErrors(['you have already voted for this competitor.']);
-
-
     }
 
-    public function otherCompetitors()
+    public function unVote($id, Request $request)
+    {
+        $votes = Competitor::findOrFail($id)->votes;
+        foreach($votes as $vote)
+        {
+            if($vote->ip == $request->getClientIp())
+            {
+                $vote->delete();
+            }
+        }
+    }
+
+    public function otherCompetitors(Request $request)
     {
         $competitors = Competitor::all();
+        foreach ($competitors as $competitor) {
+            $competitor->voted = false;
+            foreach ($competitor->votes as $vote) {
+                //check if you already have voted for this competitor
+                if($vote->ip == $request->getClientIp())
+                {
+                    $competitor->voted = true;
+                }
+            }
+        }
 
         $data = ['competitors' => $competitors];
 
@@ -156,6 +195,8 @@ class MainController extends Controller
         return json_encode($user);
     }
 
+
+
     public function managment()
     {
         $competitors = Competitor::all();
@@ -163,6 +204,43 @@ class MainController extends Controller
         $data = ['competitors' => $competitors];
 
         return View('managment')->with($data);
+    }
+
+    public function exportAll()
+    {
+        $table = Competitor::all();
+        $user = User::first();
+        $makeKeys = $table;
+        $output= "";
+        $keyArray = [];
+        foreach ($makeKeys->first()->toArray() as $key => $value) {
+            // var_dump( $key );
+                array_push($keyArray, $key);
+            
+        }
+        // var_dump($table->first()->user->toArray());
+        foreach ($user->toArray() as $key => $value) {
+            if($key !== 'id')
+            {
+                array_push($keyArray, $key);
+            }
+        }
+        // var_dump($table . '</br>');
+        // var_dump($makeKeys);
+        // var_dump( $keyArray );
+        $output .= implode(",", $keyArray) ."\n";
+        foreach ($table as $row) {
+            // var_dump($row);echo'</br>';
+            $output.=  implode(",",$row->toArray()); 
+            $output.= implode(",",$row->user->toArray()) . "\n";
+        }
+        // echo $output;
+        $headers = array(
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="ExportFileName.csv"',
+        );
+
+        return Response::make(rtrim($output, "\n"), 200, $headers);
     }
 }
 

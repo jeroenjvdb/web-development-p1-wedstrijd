@@ -1,5 +1,17 @@
+body
+{
+	background-color: rgb(220,220,220);
+	font:  "Trade Gothic W01 Roman",sans-serif;
+
+	padding-bottom: 20px;
+}
+
 img{
 	max-width: 100%;
+}
+
+.center{
+	text-align: center;
 }
 
 /*LOGIN PAGINA*/
@@ -148,9 +160,57 @@ img{
 	vertical-align: middle;
 }
 
-.test{
+.vote{
 	/*display: inline;*/
 	position: relative;
-	top: -150px;
-	left: 50%
+	top: -170px;
+	/*left: 50%;*/
+	width: 100px;
+	height: 100px;
+	border-radius: 50%;
+	text-align: center;
+	margin: 0 auto;
+	background-position: center;
+	background-repeat: no-repeat;
+	/*background-color: white;*/
+	visibility: hidden;
+}
+
+.vote.newVote{
+	
+	background-size: 45px 80px;
+	background-image: url('../img/DuvelGlass.png');
+}
+
+.vote.unvote{
+	
+	background-size: 55px 80px;
+	background-image: url('../img/emptyDuvelGlass.jpg');
+}
+
+.competitor:hover .vote{
+	visibility: visible;
+}
+
+
+.lower-top{
+	margin-top: 100px;
+}
+
+h1{
+	color: rgb(216, 1, 19);
+}
+
+.logo{
+	max-width: 25%;
+	margin-top: -20px;
+}
+
+.playNow{
+	background-color: rgb(216,1,19);
+}
+
+.playNow a{
+	display: block;
+	color: rgb(220,220,220);
 }

@@ -1,45 +1,34 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Laravel</title>
+@extends('master')
 
-        <link href="https://fonts.googleapis.com/css?family=Lato:100" rel="stylesheet" type="text/css">
-
-        <style>
-            html, body {
-                height: 100%;
-            }
-
-            body {
-                margin: 0;
-                padding: 0;
-                width: 100%;
-                display: table;
-                font-weight: 100;
-                font-family: 'Lato';
-            }
-
-            .container {
-                text-align: center;
-                display: table-cell;
-                vertical-align: middle;
-            }
-
-            .content {
-                text-align: center;
-                display: inline-block;
-            }
-
-            .title {
-                font-size: 96px;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <div class="content">
-                <div class="title">Laravel 5</div>
+@section('content')
+    <div class="row">
+        <div class="col-md-4 lowertop">
+            <h1>ssst.... </br>hier speelt den <img src="img/duvel.png" alt="duvel" class="logo"></h1>
+            <h2>over de wedstrijd</h2>
+            <p>
+                wil jij een gratis bak Duvel winnen?</br>
+                een prachtig Duvel designer glass misschien?</br>
+                dit is je kans!</br>
+                upload je beste foto met Duvel erop nu!</br>
+                nodig al je vrienden uit om je foto te liken</br>
+                elke week kan er iemand winnen!!</br>
+                doe zo snel mogelijk mee, </br>
+                dan maak je meer kans!!
+            </p>
+            <div class="col-md-offset-3 col-md-6 playNow center">
+                <a href="{{ route('competition') }}" >play now!</a>
             </div>
         </div>
-    </body>
-</html>
+        <div class="col-md-6"><img src="img/duvel-bottle-plus-glass.png" alt="a duvel bottle and it's glass"></div>
+    </div>
+    @if($winners && $winners->first())
+        <div class="row">
+            <h2>the winners</h2>
+                @foreach($winners as $winner)
+                    <div class="col-md-3">
+                        <img src="{{$winner->competitor->picture_url}}" alt="test">
+                    </div>
+                @endforeach
+        </div>
+    @endif
+@stop

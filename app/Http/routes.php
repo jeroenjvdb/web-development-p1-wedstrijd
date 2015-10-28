@@ -11,9 +11,9 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+
+
+Route::get('/', ['as' => 'home', 'uses' => 'mainController@home']);
 
 route::get('/test',['as' => 'test', 'uses'=>'mainController@test']);
 route::post('/test', ['uses' => 'mainController@postTest']);
@@ -28,4 +28,7 @@ Route::post('/competition', ['uses' => 'MainController@postCompetition']);
 Route::get('/competition/others', ['as' => 'otherCompetitors', 'uses' => 'mainController@otherCompetitors']);
 Route::get('/competitor/{id}', ['as' => 'competitor', 'uses' => 'MainController@competitor']);
 Route::get('/competitor/{id}/vote', ['as' => 'vote', 'uses' => 'MainController@vote']);
+Route::get('/competitor/{id}/unvote', [ 'as' => 'unvote', 'uses' => 'mainController@unVote']);
+
 Route::get('/managment', [ 'as' => 'managment', 'uses' => 'mainController@managment']);
+Route::get('/export/all', ['as' => 'exportAll', 'uses' => 'mainController@exportAll']);
